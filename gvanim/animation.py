@@ -30,10 +30,12 @@ class Step( object ):
 			self.V = step.V.copy()
 			self.E = step.E.copy()
 			self.L = step.L.copy()
+			self.eL = step.eL.copy()
 		else:
 			self.V = set()
 			self.E = set()
 			self.L = dict()
+			self.eL = dict()
 		self.hV = set()
 		self.hE = set()
 
@@ -51,11 +53,12 @@ class Step( object ):
 		return ''
 
 	def edge_format( self, e ):
+		eL = self.eL[e] if e in self.eL else ''
 		if e in self.hE:
-			return '[color=red]'
+			return '[color=red, label="{}"]'.format(eL)
 		elif e in self.E:
-			return ''
-		return '[style=invis]'
+			return '[label="{}"]'.format(eL)
+		return '[style=invis,label="{}"]'.format(eL)
 
 	def __repr__( self ):
 		return '{{ V = {}, E = {}, hV = {}, hE = {}, L = {} }}'.format( self.V, self.E, self.hV, self.hE, self.L )
@@ -76,6 +79,9 @@ class Animation( object ):
 
 	def label_node( self, v, label ):
 		self._actions.append( action.LabelNode( v, label ) )
+
+	def label_edge( self, u, v, label ):
+		self._actions.append( action.LabelEdge( u, v, label ) )
 
 	def unlabel_node( self, v ):
 		self._actions.append( action.UnlabelNode( v ) )

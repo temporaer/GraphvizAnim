@@ -77,6 +77,17 @@ class AddEdge( object ):
 		steps[ -1 ].V.add( self.v )
 		steps[ -1 ].E.add( ( self.u, self.v ) )
 
+class LabelEdge( object ):
+	def __init__( self, u, v, label ):
+		self.u = u
+		self.v = v
+		self.label = label
+	def __call__( self, steps ):
+		steps[ -1 ].V.add( self.u )
+		steps[ -1 ].V.add( self.v )
+		steps[ -1 ].E.add( ( self.u, self.v ) )
+		steps[ -1 ].eL[( self.u, self.v )] = self.label
+
 class HighlightEdge( object ):
 	def __init__( self, u, v ):
 		self.u = u

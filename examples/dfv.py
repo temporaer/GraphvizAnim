@@ -28,7 +28,8 @@ ga = Animation()
 for v, adj in G.items():
     for u in adj:
         ga.add_edge( v, u )
-ga.next_step()
+        ga.label_edge( v, u, '{}:{}'.format(v,u))
+        ga.next_step()
 
 seen = [ False for v in  N ]
 def dfv( v ):
