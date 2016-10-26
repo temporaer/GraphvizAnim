@@ -16,21 +16,16 @@
 # "GraphvizAnim". If not, see <http://www.gnu.org/licenses/>.
 
 from subprocess import Popen, PIPE, STDOUT, call
-from multiprocessing import Pool, cpu_count
+from joblib import Parallel, delayed
 
-def _render( params ):
-	path, fmt, size, graph = params
+def _render(path, fmt, size, graph):
 	with open( path , 'w' ) as out:
 		pipe = Popen( [ 'dot',  '-Gsize=1,1!', '-Gdpi={}'.format( size ), '-T', fmt ], stdout = out, stdin = PIPE, stderr = None )
-		pipe.communicate( input = graph )
+		pipe.communicate( input = graph.encode() )
 	return path
 
 def render( graphs, basename, fmt = 'png', size = 320 ):
-	try:
-		_map = Pool( processes = cpu_count() ).map
-	except NotImplementedError:
-		_map = map
-	return _map( _render, [ ( '{}_{:03}.{}'.format( basename, n, fmt ), fmt, size, graph ) for n, graph in enumerate( graphs ) ] )
+	return Parallel(n_jobs=1)(delayed(_render)('{}_{:03}.{}'.format( basename, n, fmt ), fmt, size, graph ) for n, graph in enumerate( graphs ))
 
 def gif( files, basename, delay = 100 ):
 	cmd = [ 'convert' ]
