@@ -17,6 +17,7 @@
 
 from subprocess import Popen, PIPE, STDOUT, call
 from joblib import Parallel, delayed
+from PIL import Image
 
 def _render(path, fmt, size, graph):
 	with open( path , 'w' ) as out:
@@ -28,6 +29,11 @@ def render( graphs, basename, fmt = 'png', size = 320 ):
 	return Parallel(n_jobs=1)(delayed(_render)('{}_{:03}.{}'.format( basename, n, fmt ), fmt, size, graph ) for n, graph in enumerate( graphs ))
 
 def gif( files, basename, delay = 100 ):
+	w, h = Image.open(files[-1]).size
+	for file in files:
+		cmd = [ 'mogrify', '-gravity', 'center', '-background', 'white', '-extent', "%dx%d" % (w,h), file ]
+		call(cmd)
+
 	cmd = [ 'convert' ]
 	for file in files:
 		cmd.extend( ( '-delay', str( delay ), file ) )
